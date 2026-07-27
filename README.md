@@ -190,6 +190,7 @@ Technical documentation:
 - [Analytics module](docs/analytics_module_ua.md)
 - [Flutter localization](docs/flutter_localization_ua.md)
 - [Docker setup](docs/docker_setup_ua.md)
+- [Codemagic iOS build](docs/codemagic_ios_ua.md)
 - [UI/UX design](docs/ui_ux_design_ua.md)
 - [PostgreSQL database design](docs/postgresql_design_ua.md)
 - [API documentation](docs/API.md)

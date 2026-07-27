@@ -92,3 +92,22 @@ For iOS simulator, use:
 ```bash
 flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1
 ```
+
+## Codemagic iOS build
+
+The root `codemagic.yaml` contains iOS workflows for simulator checks and signed release IPA builds.
+
+Required Codemagic variable group:
+
+```text
+fittrack_mobile
+```
+
+Required variables:
+
+- `API_BASE_URL`
+- `REQUIRE_HTTPS`
+- `BUNDLE_ID`
+- `FIREBASE_OPTIONS_DART_BASE64` for real Firebase options, optional for coursework scaffolding
+
+Do not pass AI provider keys to Flutter builds. `ZAI_API_KEY` must stay on the backend server only.
