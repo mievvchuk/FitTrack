@@ -1,0 +1,59 @@
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!deploy/.env.production.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+backend/.venv/
+backend/venv/
+
+# Flutter / Dart
+mobile/.dart_tool/
+mobile/.packages
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/build/
+mobile/coverage/
+mobile/android/local.properties
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+
+# Generated mobile signing files
+*.jks
+*.keystore
+*.mobileprovision
+*.p12
+
+# Docker and local runtime
+docker-compose.override.yml
+docker/*.override.yml
+docker/*.local.yml
+postgres-data/
+
+# Test artifacts
+test-results/
+coverage/
+junit.xml
+*.log
