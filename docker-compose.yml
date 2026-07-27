@@ -1,0 +1,79 @@
+name: fittrack
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fittrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fittrack}
+      POSTGRES_USER: ${POSTGRES_USER:-fittrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fittrack}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - fittrack-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fittrack} -d ${POSTGRES_DB:-fittrack}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: fittrack-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: ${PORT:-8000}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://fittrack:fittrack@postgres:5432/fittrack}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_replace_me}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_replace_me}
+      STRIPE_SUCCESS_URL: ${STRIPE_SUCCESS_URL:-fittrack://payment-success}
+      STRIPE_CANCEL_URL: ${STRIPE_CANCEL_URL:-fittrack://payment-cancel}
+      PREMIUM_PRICE_CENTS: ${PREMIUM_PRICE_CENTS:-999}
+      PREMIUM_CURRENCY: ${PREMIUM_CURRENCY:-usd}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-replace-with-a-long-random-local-secret}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ISSUER: ${JWT_ISSUER:-fittrack-api}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-fittrack-mobile}
+      JWT_ACCESS_TOKEN_MINUTES: ${JWT_ACCESS_TOKEN_MINUTES:-15}
+      JWT_REFRESH_TOKEN_DAYS: ${JWT_REFRESH_TOKEN_DAYS:-30}
+      EMAIL_VERIFICATION_TOKEN_MINUTES: ${EMAIL_VERIFICATION_TOKEN_MINUTES:-60}
+      MAX_FAILED_LOGIN_ATTEMPTS: ${MAX_FAILED_LOGIN_ATTEMPTS:-5}
+      ACCOUNT_LOCKOUT_MINUTES: ${ACCOUNT_LOCKOUT_MINUTES:-15}
+      RATE_LIMIT_DEFAULT: ${RATE_LIMIT_DEFAULT:-100/minute}
+      RATE_LIMIT_AUTH: ${RATE_LIMIT_AUTH:-5/minute}
+      RATE_LIMIT_STORAGE_URI: ${RATE_LIMIT_STORAGE_URI:-memory://}
+      ALLOWED_HOSTS: '${ALLOWED_HOSTS:-["localhost","127.0.0.1","10.0.2.2","api","testserver"]}'
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-["http://localhost","http://127.0.0.1"]}'
+      ENFORCE_HTTPS: ${ENFORCE_HTTPS:-false}
+      NOTIFICATIONS_ENABLED: ${NOTIFICATIONS_ENABLED:-true}
+      FCM_DRY_RUN: ${FCM_DRY_RUN:-true}
+      ZAI_API_KEY: ${ZAI_API_KEY:-zai_replace_me}
+      ZAI_BASE_URL: ${ZAI_BASE_URL:-https://api.z.ai/api/paas/v4}
+      ZAI_CHAT_MODEL: ${ZAI_CHAT_MODEL:-glm-5.2}
+      ZAI_TIMEOUT_SECONDS: ${ZAI_TIMEOUT_SECONDS:-30}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  fittrack-postgres-data:
